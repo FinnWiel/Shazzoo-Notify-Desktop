@@ -45,6 +45,14 @@
   "build": {
     "appId": "com.shazzoo.shazzoonotifydesktop",
     "productName": "Shazzoo Notify",
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "src/assets/logo.ico",
+      "uninstallerIcon": "src/assets/logo.ico",
+      "uninstallDisplayName": "Shazzoo Notify",
+      "deleteAppDataOnUninstall": true
+    },
     "directories": {
       "buildResources": "assets",
       "output": "dist"

@@ -23,5 +23,5 @@ if (!rootElement) {
 
 // Use contextBridge
 window.Electron.ipcRenderer.on('main-process-message', (message) => {
-  // console.log(message)
+  console.log(message)
 })
