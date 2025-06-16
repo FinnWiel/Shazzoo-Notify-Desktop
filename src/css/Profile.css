@@ -1,0 +1,156 @@
+.profile-container {
+  height: 100vh;
+  padding-top: 4rem;
+  background-color: var(--bg-primary);
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.profile-header {
+  text-align: left;
+  margin-bottom: 2rem;
+  padding: 0 0 1rem 2rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.profile-name {
+  font-size: 2rem;
+  color: var(--text-primary);
+  margin: 0;
+  margin-bottom: 0.5rem;
+}
+
+.profile-email {
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.profile-sections {
+  padding: 0 2rem;
+}
+
+.notification-preferences {
+  margin-bottom: 2rem;
+}
+
+.notification-preferences h2 {
+  color: var(--text-primary);
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+}
+
+.preferences-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.preference-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: var(--bg-secondary);
+  border-radius: 6px;
+  transition: background-color 0.2s;
+}
+
+.preference-item:hover {
+  background-color: var(--input-hover-bg);
+}
+
+.preference-info h3 {
+  color: var(--text-primary);
+  margin: 0;
+  font-size: 1rem;
+}
+
+.preference-info p {
+  color: var(--text-secondary);
+  margin: 0.25rem 0 0;
+  font-size: 0.875rem;
+}
+
+/* Switch styles */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 24px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--border-color);
+  transition: .4s;
+  border-radius: 24px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: var(--primary-color);
+}
+
+input:checked + .slider:before {
+  transform: translateX(26px);
+}
+
+.profile-actions {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 1rem;
+}
+
+.logout-button {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.2s;
+}
+
+.logout-button:hover {
+  background-color: #c82333;
+}
+
+.error-message {
+  color: var(--danger-color);
+  background-color: var(--danger-bg);
+  padding: 0.75rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+/* Ensure theme toggle doesn't overlap */
+:global(.theme-toggle) {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1000;
+} 

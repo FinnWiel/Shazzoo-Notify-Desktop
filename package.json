@@ -1,0 +1,77 @@
+{
+  "name": "shazzoo-notify",
+  "productName": "Shazzoo Notify",
+  "private": true,
+  "version": "0.0.0",
+  "main": "dist-electron/main.js",
+  "scripts": {
+    "dev": "vite",
+    "build:renderer": "vite build",
+    "build:main": "tsc",
+    "build": "npm run build:renderer && npm run build:main",
+    "pack": "npm run build && electron-builder"
+  },
+  "dependencies": {
+    "@electron-toolkit/utils": "^4.0.0",
+    "@types/uuid": "^10.0.0",
+    "auto-launch": "^5.0.6",
+    "axios": "^1.9.0",
+    "laravel-echo": "^2.1.5",
+    "pusher-js": "^8.4.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^7.6.2",
+    "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.64",
+    "@types/react-dom": "^18.2.21",
+    "@typescript-eslint/eslint-plugin": "^7.1.1",
+    "@typescript-eslint/parser": "^7.1.1",
+    "@vitejs/plugin-react": "^4.2.1",
+    "concurrently": "^9.1.2",
+    "electron": "^30.5.1",
+    "electron-builder": "^24.13.3",
+    "electron-store": "^10.0.1",
+    "electron-vite": "^3.1.0",
+    "eslint": "^8.57.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.5",
+    "typescript": "^5.2.2",
+    "vite": "^5.4.19",
+    "vite-plugin-electron": "^0.28.6",
+    "vite-plugin-electron-renderer": "^0.14.5"
+  },
+  "build": {
+    "appId": "com.shazzoo.shazzoonotifydesktop",
+    "productName": "Shazzoo Notify",
+    "directories": {
+      "buildResources": "assets",
+      "output": "dist"
+    },
+    "files": [
+      "dist/**",
+      "dist-electron/**"
+    ],
+    "extraResources": [
+      {
+        "from": "src/assets",
+        "to": "assets"
+      }
+    ],
+    "asar": true,
+    "asarUnpack": [],
+    "win": {
+      "icon": "src/assets/logo.png",
+      "target": [
+        "nsis"
+      ]
+    },
+    "mac": {
+      "icon": "src/assets/logo.png",
+      "target": [
+        "dmg"
+      ]
+    }
+  }
+}
