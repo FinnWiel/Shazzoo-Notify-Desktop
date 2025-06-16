@@ -89,7 +89,7 @@ const Profile: React.FC = () => {
 
     // Add event listener for preferences updates
     const handlePreferencesUpdate = () => {
-      console.log('WebSocket: Preferences update received');
+      // console.log('WebSocket: Preferences update received');
       fetchPreferences();
     };
 

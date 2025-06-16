@@ -22,7 +22,7 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const loadApiUrl = async () => {
       try {
         const url = await window.Electron.ipcRenderer.invoke('get-api-url');
-        console.log('Loaded API URL:', url); // Debug log
+        // console.log('Loaded API URL:', url); // Debug log
         if (url && typeof url === 'string' && url.trim() !== '') {
           setApiUrlState(url);
           setIsUrlSet(true);

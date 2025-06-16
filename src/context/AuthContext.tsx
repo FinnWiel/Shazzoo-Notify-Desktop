@@ -33,10 +33,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       try {
         const { token: storedToken, userData } =
           await window.Electron.ipcRenderer.invoke("get-auth-data");
-        console.log("Loaded stored auth:", {
-          token: storedToken ? "present" : "missing",
-          userData: userData ? "present" : "missing",
-        });
+        // console.log("Loaded stored auth:", {
+        //   token: storedToken ? "present" : "missing",
+        //   userData: userData ? "present" : "missing",
+        // });
 
         if (storedToken && userData) {
           // Verify token with /api/me endpoint
@@ -75,7 +75,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
             setToken(storedToken);
             setUser(updatedUserData);
             setIsAuthenticated(true);
-            console.log("Auth state restored and verified successfully");
+            // console.log("Auth state restored and verified successfully");
           } catch (error) {
             console.error("Token validation error:", error);
             // Clear invalid data
@@ -138,7 +138,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
       const data = await response.json();
       const accessToken = data.token;
-      console.log("Login successful, storing auth data");
+      // console.log("Login successful, storing auth data");
 
       const userData = {
         id: data.user.id,
@@ -150,7 +150,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         token: accessToken,
         user: userData,
       });
-      console.log("Auth data stored in electron store");
+      // console.log("Auth data stored in electron store");
 
       setToken(accessToken);
       setUser(userData);

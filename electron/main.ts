@@ -25,10 +25,10 @@ const RENDERER_DIST = isDev ? path.join(APP_ROOT, 'dist') : path.join(APP_ROOT, 
 process.env.APP_ROOT = APP_ROOT;
 process.env.VITE_PUBLIC = isDev ? path.join(APP_ROOT, 'public') : RENDERER_DIST;
 
-// Add debug logging
-console.log('App root:', APP_ROOT);
-console.log('Renderer dist:', RENDERER_DIST);
-console.log('Is dev:', isDev);
+const notificationIcon = process.platform === 'win32'
+  ? path.resolve(process.env.VITE_PUBLIC!, 'logo.ico')
+  : path.resolve(process.env.VITE_PUBLIC!, 'logo.png');
+
 
 let win: BrowserWindow | null = null;
 let tray: Tray | null = null;8
@@ -40,6 +40,8 @@ const autoLauncher = new AutoLaunch({
   path: app.getPath('exe'),
   isHidden: true
 });
+
+app.setAppUserModelId('Shazzoo Notify');
 
 const getOrCreateEncryptionKey = () => {
   const keyPath = path.join(app.getPath('userData'), 'encryption-key');
@@ -181,7 +183,7 @@ async function toggleNotificationPreference(key: string) {
             const notification = new Notification({
               title: data.title || 'Shazzoo Mobile',
               body: data.data || 'You have a new notification',
-              icon: path.join(__dirname, '../src/assets/logo.png'),
+              icon: notificationIcon,
               silent: false
             });
 
@@ -313,7 +315,7 @@ async function initializeWebSocket() {
         const notification = new Notification({
           title: data.title || 'Shazzoo Mobile',
           body: data.data || 'You have a new notification',
-          icon: path.join(__dirname, '../src/assets/logo.png'),
+          icon: notificationIcon,
           silent: false
         });
 
