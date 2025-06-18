@@ -417,6 +417,12 @@ app.whenReady().then(async () => {
   app.setPath('userData', userDataPath);
   app.setPath('cache', cachePath);
 
+  if (process.platform === 'darwin') {
+    const iconPath = getAppIconPath();
+    const dockIcon = nativeImage.createFromPath(iconPath);
+    app.dock.setIcon(dockIcon);
+  }
+
   Menu.setApplicationMenu(null);
   const isAutoLaunchEnabled = await autoLauncher.isEnabled();
   console.log('Auto-launch enabled:', isAutoLaunchEnabled);
