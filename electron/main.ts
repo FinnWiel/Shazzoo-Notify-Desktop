@@ -211,12 +211,15 @@ async function toggleNotificationPreference(key: string) {
     return {};
   }
 }
-
 function getTrayIconPath() {
+  const assetName = process.platform === 'darwin'
+    ? 'tray-icon-mac.png'  // macOS: monochrome
+    : 'tray-icon.png';          // Windows/Linux: full color
+
   if (isDev) {
-    return path.resolve(__dirname, '../src/assets/tray-icon.png');
+    return path.resolve(__dirname, `../src/assets/${assetName}`);
   } else {
-    return path.join(process.resourcesPath, 'assets', 'tray-icon.png');
+    return path.join(process.resourcesPath, 'assets', assetName);
   }
 }
 
@@ -230,18 +233,52 @@ async function createTray() {
   const token = store.get('authToken');
   if (!token) {
     const contextMenu = Menu.buildFromTemplate([
+      { label: 'Open App', click: () => { win?.show(); win?.focus(); } },
+      { type: 'separator' },
       { label: 'Please login', enabled: false },
+      { type: 'separator' },
       { label: 'Quit', click: () => app.quit() }
     ]);
     tray.setContextMenu(contextMenu);
     return;
   }
 
-  const preferences = await getNotificationPreferences();
-  updateTrayMenu(preferences);
+  try {
+    const preferences = await getNotificationPreferences();
+    updateTrayMenu(preferences);
+  } catch (error) {
+    console.error('Failed to get notification preferences for tray:', error);
+    // Fallback to basic menu if preferences can't be loaded
+    const contextMenu = Menu.buildFromTemplate([
+      { label: 'Open App', click: () => { win?.show(); win?.focus(); } },
+      { type: 'separator' },
+      { label: 'Failed to load preferences', enabled: false },
+      { type: 'separator' },
+      { label: 'Quit', click: () => { tray?.destroy(); app.quit(); }}
+    ]);
+    tray.setContextMenu(contextMenu);
+  }
 }
 
 function updateTrayMenu(preferences: any) {
+  if (!tray) {
+    console.warn('Tray not initialized, cannot update menu');
+    return;
+  }
+
+  // Handle empty or undefined preferences
+  if (!preferences || Object.keys(preferences).length === 0) {
+    const contextMenu = Menu.buildFromTemplate([
+      { label: 'Open App', click: () => { win?.show(); win?.focus(); } },
+      { type: 'separator' },
+      { label: 'No notification preferences available', enabled: false },
+      { type: 'separator' },
+      { label: 'Quit', click: () => { tray?.destroy(); app.quit(); }}
+    ]);
+    tray.setContextMenu(contextMenu);
+    return;
+  }
+
   const preferenceItems = Object.entries(preferences).map(([key, value]) => ({
     label: key,
     type: 'checkbox' as const,
@@ -262,7 +299,7 @@ function updateTrayMenu(preferences: any) {
     { label: 'Quit', click: () => { tray?.destroy(); app.quit(); }}
   ]);
 
-  tray?.setContextMenu(contextMenu);
+  tray.setContextMenu(contextMenu);
 }
 
 async function initializeWebSocket() {
@@ -329,6 +366,9 @@ async function initializeWebSocket() {
       });
     }
 
+    // Update tray menu with current preferences
+    updateTrayMenu(preferences);
+
   } catch (error) {
     console.error('WebSocket: Initialization failed:', error);
   } finally {
@@ -378,6 +418,8 @@ app.whenReady().then(async () => {
         pusherClient = null;
       }
     }
+    // Update tray menu when auth state changes
+    await createTray();
     return true;
   });
 
@@ -390,6 +432,12 @@ app.whenReady().then(async () => {
   ipcMain.handle('clear-auth-data', async () => {
     store.delete('authToken');
     store.delete('userData');
+    if (pusherClient) {
+      pusherClient.disconnect();
+      pusherClient = null;
+    }
+    // Update tray menu when auth state changes
+    await createTray();
     return true;
   });
 
