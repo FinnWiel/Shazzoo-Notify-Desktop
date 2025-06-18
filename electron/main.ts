@@ -214,7 +214,7 @@ async function toggleNotificationPreference(key: string) {
 function getTrayIconPath() {
   const assetName = process.platform === 'darwin'
     ? 'tray-icon-mac.png'  // macOS: monochrome
-    : 'tray-icon.png';          // Windows/Linux: full color
+    : 'tray-icon.png';     // Windows/Linux: full color
 
   if (isDev) {
     return path.resolve(__dirname, `../src/assets/${assetName}`);
