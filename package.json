@@ -70,13 +70,13 @@
     "asar": true,
     "asarUnpack": [],
     "win": {
-      "icon": "src/assets/logo.png",
+      "icon": "src/assets/logo.ico",
       "target": [
         "nsis"
       ]
     },
     "mac": {
-      "icon": "src/assets/logo.png",
+      "icon": "src/assets/logo.icns",
       "target": [
         "dmg"
       ]

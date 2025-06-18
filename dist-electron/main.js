@@ -41951,9 +41951,18 @@ function getDeviceId() {
   }
   return null;
 }
+function getAppIconPath() {
+  if (process.platform === "win32") {
+    return isDev ? path$2.resolve(__dirname$1, "../src/assets/logo.ico") : path$2.join(process.resourcesPath, "assets", "logo.ico");
+  }
+  if (process.platform === "darwin") {
+    return isDev ? path$2.resolve(__dirname$1, "../src/assets/logo.png") : path$2.join(process.resourcesPath, "assets", "logo.png");
+  }
+  return isDev ? path$2.resolve(__dirname$1, "../src/assets/logo.png") : path$2.join(process.resourcesPath, "assets", "logo.png");
+}
 function createWindow() {
   win = new electron.BrowserWindow({
-    icon: path$2.join(process.env.VITE_PUBLIC, "logo.png"),
+    icon: getAppIconPath(),
     minWidth: 500,
     minHeight: 500,
     width: 650,

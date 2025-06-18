@@ -68,9 +68,32 @@ function getDeviceId(): string | null {
   return null;
 }
 
+function getAppIconPath() {
+  if (process.platform === 'win32') {
+    return isDev
+      ? path.resolve(__dirname, '../src/assets/logo.ico')
+      : path.join(process.resourcesPath, 'assets', 'logo.ico');
+  }
+
+  if (process.platform === 'darwin') {
+    // In production, macOS uses icon.icns from electron-builder config
+    // For BrowserWindow and Tray, still need a .png
+    return isDev
+      ? path.resolve(__dirname, '../src/assets/logo.png')
+      : path.join(process.resourcesPath, 'assets', 'logo.png');
+  }
+
+  // Linux or fallback
+  return isDev
+    ? path.resolve(__dirname, '../src/assets/logo.png')
+    : path.join(process.resourcesPath, 'assets', 'logo.png');
+}
+
+
+
 function createWindow() {
   win = new BrowserWindow({
-    icon: path.join(process.env.VITE_PUBLIC!, 'logo.png'),
+    icon: getAppIconPath(),
     minWidth: 500,
     minHeight: 500,
     width: 650,
