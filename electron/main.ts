@@ -121,11 +121,11 @@ function createWindow() {
   }
 
   // Open DevTools after a short delay
-  if( isDev) {
+  // if( isDev) {
     setTimeout(() => {
       win?.webContents.openDevTools();
     }, 1000);
-  }
+  // }
 
   win.webContents.on('did-fail-load', (errorCode, errorDescription) => {
     console.error('Failed to load:', errorCode, errorDescription);
