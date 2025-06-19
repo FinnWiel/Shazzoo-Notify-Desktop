@@ -43,46 +43,66 @@ const Profile: React.FC = () => {
   };
 
   const fetchPreferences = async () => {
-    if (!token) {
-      setError('Not authenticated');
-      setIsLoading(false);
-      return;
+  
+  if (!token) {
+    console.warn('[fetchPreferences] No auth token found');
+    setError('Not authenticated');
+    setIsLoading(false);
+    return;
+  }
+
+  const deviceId = localStorage.getItem('deviceId');
+  if (!deviceId) {
+    console.warn('[fetchPreferences] No device ID found in localStorage');
+    setError('Device ID not found');
+    setIsLoading(false);
+    return;
+  }
+
+  const endpoint = `${apiUrl}/api/notification-preferences`;
+
+  try {
+    const response = await fetch(endpoint, {
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+        'Device-Token': deviceId
+      },
+    });
+
+
+    const contentType = response.headers.get('Content-Type');
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('[fetchPreferences] Non-OK response:', errorText);
+      throw new Error(`Failed to fetch preferences: ${response.status}`);
     }
 
-    const deviceId = localStorage.getItem('deviceId');
-    if (!deviceId) {
-      setError('Device ID not found');
-      setIsLoading(false);
-      return;
+    if (!contentType || !contentType.includes('application/json')) {
+      const raw = await response.text();
+      console.error('[fetchPreferences] Unexpected response type. Raw response:', raw);
+      throw new Error('Response is not JSON');
     }
 
-    try {
-      const response = await fetch(`${apiUrl}/api/notification-preferences`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Device-Token': deviceId
-        },
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch preferences');
-      }
+    const data = await response.json();
 
-      const data = await response.json();
-      const newPreferences = Object.entries(data).reduce((acc, [key, value]) => ({
-        ...acc,
-        [key]: Boolean(value)
-      }), {});
-      
-      setPreferences(newPreferences);
-    } catch (err) {
-      console.error('WebSocket: Failed to load notification preferences:', err);
-      setError('Failed to load notification preferences');
-      setPreferences({});
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    const newPreferences = Object.entries(data).reduce((acc, [key, value]) => ({
+      ...acc,
+      [key]: Boolean(value)
+    }), {});
+
+    setPreferences(newPreferences);
+  } catch (err) {
+    console.error('Error occurred:', err);
+    setError('Failed to load notification preferences');
+    setPreferences({});
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   useEffect(() => {
     fetchPreferences();

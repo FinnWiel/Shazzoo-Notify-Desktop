@@ -1,4 +1,4 @@
-import { app, BrowserWindow, Menu, ipcMain, Tray, nativeImage, Notification } from 'electron';
+import { app, BrowserWindow, Menu, ipcMain, Tray, nativeImage, Notification, shell  } from 'electron';
 import { fileURLToPath } from 'node:url';
 import path from 'path';
 import Store from 'electron-store';
@@ -158,6 +158,8 @@ async function getNotificationPreferences() {
   try {
     const response = await fetch(`${apiUrl}/api/notification-preferences`, {
       headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`,
         'Device-Token': deviceId
       }
@@ -184,6 +186,7 @@ async function toggleNotificationPreference(key: string) {
     const response = await fetch(`${apiUrl}/api/notification-preferences`, {
       method: 'POST',
       headers: {
+        Accept: 'application/json',
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
         'Device-Token': deviceId
@@ -329,7 +332,7 @@ function updateTrayMenu(preferences: any) {
 
 async function initializeWebSocket() {
   if (websocketInitializing) {
-    console.log('WebSocket: Already initializing, skipping...');
+    console.log('[WS] Already initializing, skipping...');
     return;
   }
 
@@ -338,24 +341,29 @@ async function initializeWebSocket() {
   try {
     const token = store.get('authToken');
     const apiUrl = store.get('apiUrl');
-    
+
     if (!token || !apiUrl) {
-      console.error('WebSocket: Missing credentials');
+      console.error('[WS] Missing credentials');
       return;
     }
 
     if (pusherClient) {
-      console.log('WebSocket: Cleaning up existing Pusher connection');
       pusherClient.disconnect();
       pusherClient = null;
     }
 
-    console.log('WebSocket: Fetching configuration...');
     const response = await axios.get(`${apiUrl}/api/websocket-config`, {
-      headers: { 'Authorization': `Bearer ${token}` }
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
     });
 
     const config = response.data;
+
+    // Enable Pusher debug logging to console
+    Pusher.logToConsole = false;
 
     pusherClient = new Pusher(config.pusherKey, {
       wsHost: config.wsHost,
@@ -373,7 +381,9 @@ async function initializeWebSocket() {
 
       const channelName = `notifications.${type}`;
       const channel = pusherClient.subscribe(channelName);
+
       channel.bind(`${type}.notification`, (data: any) => {
+
         const notification = new Notification({
           title: data.title || 'Shazzoo Mobile',
           body: data.data || 'You have a new notification',
@@ -384,22 +394,20 @@ async function initializeWebSocket() {
         notification.show();
         notification.on('click', () => {
           if (win) {
-            win.show();
-            win.focus();
+            shell.openExternal(data.url || apiUrl);
           }
         });
       });
     }
 
-    // Update tray menu with current preferences
     updateTrayMenu(preferences);
-
   } catch (error) {
-    console.error('WebSocket: Initialization failed:', error);
+    console.error('[WS] Initialization failed:', error);
   } finally {
     websocketInitializing = false;
   }
 }
+
 
 app.whenReady().then(async () => {
   // Configure cache directory

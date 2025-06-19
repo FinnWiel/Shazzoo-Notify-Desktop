@@ -50,6 +50,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           try {
             const response = await fetch(`${apiUrl}/api/me`, {
               headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
                 Authorization: `Bearer ${storedToken}`,
               },
             });
@@ -121,6 +123,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       const response = await fetch(`${apiUrl}/api/login`, {
         method: "POST",
         headers: {
+          Accept: 'application/json',
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -177,6 +180,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       const response = await fetch(`${apiUrl}/api/logout`, {
         method: "POST",
         headers: {
+          Accept: 'application/json',
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },

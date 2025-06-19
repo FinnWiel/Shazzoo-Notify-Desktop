@@ -71,7 +71,7 @@
 }
 
 .api-setup-form button:hover {
-  background: var(--primary-color-dark);
+  background: var(--primary-hover);
 }
 
 .api-setup-form button:disabled {
