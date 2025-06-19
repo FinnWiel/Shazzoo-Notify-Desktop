@@ -337,6 +337,7 @@ async function initializeWebSocket() {
   }
 
   websocketInitializing = true;
+  console.log('[WS] Starting initialization...');
 
   try {
     const token = store.get('authToken');
@@ -348,10 +349,12 @@ async function initializeWebSocket() {
     }
 
     if (pusherClient) {
+      console.log('[WS] Disconnecting existing Pusher client...');
       pusherClient.disconnect();
       pusherClient = null;
     }
 
+    console.log('[WS] Fetching WebSocket config...');
     const response = await axios.get(`${apiUrl}/api/websocket-config`, {
       headers: {
         Accept: 'application/json',
@@ -362,9 +365,7 @@ async function initializeWebSocket() {
 
     const config = response.data;
 
-    // Enable Pusher debug logging to console
-    Pusher.logToConsole = false;
-
+    console.log('[WS] Initializing Pusher with config:', config);
     pusherClient = new Pusher(config.pusherKey, {
       wsHost: config.wsHost,
       wsPort: config.wsPort,
@@ -374,15 +375,31 @@ async function initializeWebSocket() {
       cluster: 'mt1'
     });
 
+    // Optional: listen for connection events
+    pusherClient.connection.bind('connected', () => {
+      console.log('[WS] Connected to Pusher');
+    });
+
+    pusherClient.connection.bind('error', (err: any) => {
+      console.error('[WS] Connection error:', err);
+    });
+
+    pusherClient.connection.bind('disconnected', () => {
+      console.warn('[WS] Disconnected from Pusher');
+    });
+
     const preferences = await getNotificationPreferences();
+    console.log('[WS] Subscribing to channels based on preferences:', preferences);
 
     for (const [type, enabled] of Object.entries(preferences)) {
       if (!enabled) continue;
 
       const channelName = `notifications.${type}`;
+      console.log(`[WS] Subscribing to channel: ${channelName}`);
       const channel = pusherClient.subscribe(channelName);
 
       channel.bind(`${type}.notification`, (data: any) => {
+        console.log(`[WS] Notification received on ${channelName}:`, data);
 
         const notification = new Notification({
           title: data.title || 'Shazzoo Mobile',
@@ -393,6 +410,7 @@ async function initializeWebSocket() {
 
         notification.show();
         notification.on('click', () => {
+          console.log(`[WS] Notification clicked. Opening: ${data.url || apiUrl}`);
           if (win) {
             shell.openExternal(data.url || apiUrl);
           }
@@ -405,8 +423,10 @@ async function initializeWebSocket() {
     console.error('[WS] Initialization failed:', error);
   } finally {
     websocketInitializing = false;
+    console.log('[WS] Initialization complete.');
   }
 }
+
 
 
 app.whenReady().then(async () => {
