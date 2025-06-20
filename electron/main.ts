@@ -375,6 +375,8 @@ async function initializeWebSocket() {
       cluster: 'mt1'
     });
 
+    console.log(`${config.forceTLS ? ['wss'] : ['ws']}`);
+
     // Optional: listen for connection events
     pusherClient.connection.bind('connected', () => {
       console.log('[WS] Connected to Pusher');
