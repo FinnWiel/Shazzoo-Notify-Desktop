@@ -210,7 +210,7 @@ async function toggleNotificationPreference(key: string) {
           try {
             const notification = new Notification({
               title: data.title || 'Shazzoo Mobile',
-              body: data.data || 'You have a new notification',
+              body: data.body || 'You have a new notification',
               icon: notificationIcon,
               silent: false
             });
@@ -403,7 +403,7 @@ async function initializeWebSocket() {
 
         const notification = new Notification({
           title: data.title || 'Shazzoo Mobile',
-          body: data.data || 'You have a new notification',
+          body: data.body || 'You have a new notification',
           icon: notificationIcon,
           silent: false
         });
