@@ -370,7 +370,7 @@ async function initializeWebSocket() {
       wsHost: config.wsHost,
       wsPort: config.wsPort,
       forceTLS: config.forceTLS,
-      enabledTransports: ['ws', 'wss'],
+      enabledTransports: config.forceTLS ? ['wss'] : ['ws'],
       disableStats: true,
       cluster: 'mt1'
     });
